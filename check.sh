@@ -9,7 +9,6 @@ echo "=== Runtime check: required files ==="
 
 echo "=== Runtime check: required paths ==="
 mkdir -p datasets output config
-[ -f aitk_db.db ] || touch aitk_db.db
 
 echo "=== Runtime check: docker available ==="
 command -v docker >/dev/null 2>&1 || {

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["docker-compose", "terraform"],
+  "packageRules": [
+    {
+      "matchManagers": ["docker-compose", "terraform"],
+      "groupName": "infra-dependencies"
+    }
+  ]
+}
