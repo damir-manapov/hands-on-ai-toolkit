@@ -1,0 +1,26 @@
+# Moscow preset targeting GPU flavor (RTX 6000 Ada)
+# Copy to terraform.tfvars or pass explicitly with:
+# terraform apply -var-file=terraform.tfvars.moscow-6000ada
+
+environment_name = "ai-toolkit-moscow-6000ada"
+
+# Moscow region/zone
+region            = "ru-7"
+availability_zone = "ru-7b"
+
+ssh_public_key_path = "~/.ssh/id_ed25519.pub"
+
+# Use existing GPU flavor in Selectel/OpenStack
+# RTX 6000 Ada, 12 vCPU, 64GB RAM, 48GB VRAM
+flavor_name = "GL10.12-65536-0-1GPU"
+
+# Ignored when flavor_name is set, kept for reference
+cpu_count    = 12
+ram_gb       = 64
+
+disk_size_gb = 250
+disk_type    = "fast"
+
+# Lock down access in production
+allowed_ssh_cidr = "0.0.0.0/0"
+allowed_ui_cidr  = "0.0.0.0/0"

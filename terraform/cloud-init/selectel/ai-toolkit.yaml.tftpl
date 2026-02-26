@@ -33,6 +33,7 @@ write_files:
           environment:
             - HF_TOKEN=${hf_token}
             - AI_TOOLKIT_AUTH=${ai_toolkit_auth}
+            - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
             - TZ=UTC
           deploy:
             resources:
