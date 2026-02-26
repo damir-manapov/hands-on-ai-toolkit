@@ -199,6 +199,7 @@ resource "openstack_compute_instance_v2" "ai_toolkit" {
   user_data = templatefile("${path.module}/../cloud-init/selectel/ai-toolkit.yaml.tftpl", {
     ai_toolkit_auth       = var.ai_toolkit_auth
     nvidia_driver_version = var.nvidia_driver_version
+    hf_token              = var.hf_token
   })
 
   network {

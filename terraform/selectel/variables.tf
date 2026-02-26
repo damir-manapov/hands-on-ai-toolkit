@@ -113,3 +113,10 @@ variable "ai_toolkit_auth" {
   sensitive   = true
   default     = ""
 }
+
+variable "hf_token" {
+  description = "Hugging Face token for gated model downloads"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
