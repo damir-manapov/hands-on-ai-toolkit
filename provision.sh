@@ -39,7 +39,16 @@ terraform plan -var-file="$VAR_FILE" -out=tfplan -input=false
 
 echo ""
 echo "--- Applying ---"
-terraform apply -input=false tfplan
+if ! terraform apply -input=false tfplan; then
+  echo ""
+  echo "ERROR: terraform apply failed."
+  PARTIAL=$(terraform state list 2>/dev/null | wc -l)
+  if [ "$PARTIAL" -gt 0 ]; then
+    echo "Cleaning up $PARTIAL partially created resources..."
+    terraform destroy -var-file="$VAR_FILE" -auto-approve || true
+  fi
+  exit 1
+fi
 
 # ── Extract outputs ────────────────────────────────────────────
 SERVER_IP=$(terraform output -raw server_ip)
