@@ -36,8 +36,9 @@ Minimal runtime wrapper for [AI Toolkit by Ostris](https://github.com/ostris/ai-
 ```sh
 ./check.sh      # Local runtime sanity checks + compose config validation
 ./terraform/check.sh # Terraform fmt/validate (+ optional tflint/trivy)
-./all-checks.sh # Runs both runtime and terraform checks
-./renovate-check.sh # Optional: checks Docker/Terraform updates via Renovate dry-run
+./security.sh   # gitleaks secret scan (optional strict mode)
+./renovate-check.sh # Checks Docker/Terraform updates via Renovate dry-run
+./all-checks.sh # Runs runtime + terraform + security + renovate checks
 ```
 
 ## Run (when internet is available)

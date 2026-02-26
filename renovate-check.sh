@@ -41,7 +41,7 @@ echo "$BRANCHES_INFO" | grep -oE '\{"branchName":"[^}]+\}' | while read -r branc
   MANAGER=$(echo "$branch" | grep -oE '"manager":"[^"]+' | cut -d'"' -f4)
 
   if [ -n "$DEP_NAME" ] && [ -n "$CURRENT" ] && [ -n "$NEW" ]; then
-    printf "- [%s] %s: %s -> %s (%s)\n" "${MANAGER:-unknown}" "$DEP_NAME" "$CURRENT" "$NEW" "${UPDATE_TYPE:-unknown}"
+    printf -- "- [%s] %s: %s -> %s (%s)\n" "${MANAGER:-unknown}" "$DEP_NAME" "$CURRENT" "$NEW" "${UPDATE_TYPE:-unknown}"
   fi
 done
 
