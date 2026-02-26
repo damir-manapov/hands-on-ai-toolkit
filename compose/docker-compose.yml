@@ -1,34 +1,31 @@
 services:
   ai-toolkit:
-    image: ghcr.io/ostris/ai-toolkit:latest
-    build:
-      context: ./ai-toolkit
-      dockerfile: Dockerfile
+    image: ostris/aitoolkit:latest
     container_name: ai-toolkit
     ports:
       - '8675:8675'
     volumes:
-      - ./config:/workspace/config
-      - toolkit-output:/workspace/output
-      - toolkit-models:/workspace/models
+      - ${HOME}/.cache/huggingface/hub:/root/.cache/huggingface/hub
+      - ../datasets:/app/ai-toolkit/datasets
+      - ../output:/app/ai-toolkit/output
+      - ../config:/app/ai-toolkit/config
     environment:
       - HF_TOKEN=${HF_TOKEN:-}
       - AI_TOOLKIT_AUTH=${AI_TOOLKIT_AUTH:-}
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      - NODE_ENV=production
+      - TZ=UTC
+    # Uncomment deploy section below if you have an NVIDIA GPU:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
     restart: unless-stopped
     healthcheck:
       test: ['CMD', 'curl', '-sf', 'http://localhost:8675']
       interval: 15s
       timeout: 10s
-      retries: 20
-      start_period: 60s
-
-volumes:
-  toolkit-output:
-  toolkit-models:
+      retries: 30
+      start_period: 120s

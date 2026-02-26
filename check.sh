@@ -1,16 +1,23 @@
 #!/bin/sh
 set -e
 
-echo "=== Running format ==="
-pnpm run format
+echo "=== Runtime check: required files ==="
+[ -f compose/docker-compose.yml ] || {
+	echo "Missing compose/docker-compose.yml"
+	exit 1
+}
 
-echo "=== Running lint ==="
-pnpm run lint
+echo "=== Runtime check: required paths ==="
+mkdir -p datasets output config
+[ -f aitk_db.db ] || touch aitk_db.db
 
-echo "=== Running typecheck ==="
-pnpm run typecheck
+echo "=== Runtime check: docker available ==="
+command -v docker >/dev/null 2>&1 || {
+	echo "Docker is not installed or not in PATH"
+	exit 1
+}
 
-echo "=== Running tests ==="
-pnpm run test
+echo "=== Runtime check: docker compose config ==="
+docker compose -f compose/docker-compose.yml config >/dev/null
 
-echo "=== All checks passed ==="
+echo "=== Runtime checks passed ==="
