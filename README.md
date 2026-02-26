@@ -56,43 +56,50 @@ Stop:
 docker compose -f compose/docker-compose.yml down
 ```
 
-## Provision server in Selectel (similar to optina-optimisations)
+## Selectel GPU Server
 
-1. Prepare variables:
-	```sh
-	cd terraform/selectel
-	cp terraform.tfvars.example terraform.tfvars
-	```
+### Quick start
 
-	Moscow GPU preset (RTX 4080 target):
-	```sh
-	cp terraform.tfvars.moscow-4080 terraform.tfvars
-	```
+```sh
+# 1. Export Selectel credentials
+export TF_VAR_selectel_domain="..."
+export TF_VAR_selectel_username="..."
+export TF_VAR_selectel_password="..."
+export TF_VAR_selectel_openstack_password="..."
+# optional
+export TF_VAR_ai_toolkit_auth="super-secure-token"
 
-2. Export Selectel credentials:
-	```sh
-	export TF_VAR_selectel_domain="..."
-	export TF_VAR_selectel_username="..."
-	export TF_VAR_selectel_password="..."
-	export TF_VAR_selectel_openstack_password="..."
-	# optional
-	export TF_VAR_ai_toolkit_auth="super-secure-token"
-	```
+# 2. Provision (Moscow RTX 4090 preset by default)
+./provision.sh
 
-3. Create server:
-	```sh
-	terraform init
-	terraform apply
-	```
+# 3. Destroy when done
+./destroy.sh
+```
 
-4. Get access details:
-	```sh
-	terraform output ssh_command
-	terraform output ui_url
-	terraform output wait_for_ready
-	```
+### Scripts
 
-5. Destroy when done:
-	```sh
-	terraform destroy
-	```
+| Script | Purpose |
+|--------|---------|
+| `./provision.sh` | Init + plan + apply, wait for cloud-init, verify GPU & UI |
+| `./destroy.sh` | Destroy all infrastructure (with confirmation prompt) |
+
+Both default to the `terraform.tfvars.moscow-4080` preset. Pass a custom var file:
+
+```sh
+./provision.sh my-custom.tfvars
+./destroy.sh my-custom.tfvars
+```
+
+Skip destroy confirmation: `FORCE=1 ./destroy.sh`
+
+### Manual terraform (if needed)
+
+```sh
+cd terraform/selectel
+terraform init
+terraform plan  -var-file=terraform.tfvars.moscow-4080
+terraform apply -var-file=terraform.tfvars.moscow-4080
+terraform output ssh_command
+terraform output ui_url
+terraform destroy -var-file=terraform.tfvars.moscow-4080
+```
