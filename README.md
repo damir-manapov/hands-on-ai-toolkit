@@ -78,6 +78,7 @@ export TF_VAR_selectel_password="..."
 export TF_VAR_selectel_openstack_password="..."
 # optional
 export TF_VAR_ai_toolkit_auth="super-secure-token"
+export TF_VAR_hf_token="hf_..."
 
 # 2. Provision (Moscow RTX 4090 preset by default)
 ./provision.sh
