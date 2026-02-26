@@ -4,9 +4,9 @@ set -e
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR/terraform"
 
-echo "=== Terraform: format (selectel) ==="
+echo "=== Terraform: format check (selectel) ==="
 if [ -d "selectel" ]; then
-  (cd selectel && terraform fmt)
+  (cd selectel && terraform fmt -check -diff)
 fi
 
 echo ""

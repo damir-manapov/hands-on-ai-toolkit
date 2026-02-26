@@ -45,7 +45,9 @@ write_files:
 runcmd:
   - mkdir -p /opt/ai-toolkit/datasets /opt/ai-toolkit/output /opt/ai-toolkit/config
   # Install NVIDIA driver
-  - DEBIAN_FRONTEND=noninteractive apt-get install -y linux-headers-$(uname -r) nvidia-driver-590
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y linux-headers-$(uname -r) nvidia-driver-${nvidia_driver_version}
+  # Wait for DKMS to build the kernel module (may already be done by apt postinst)
+  - dkms autoinstall || true
   - modprobe nvidia
   - modprobe nvidia_uvm
   # Install NVIDIA Container Toolkit

@@ -101,6 +101,12 @@ variable "allowed_ui_cidr" {
   default     = "0.0.0.0/0"
 }
 
+variable "nvidia_driver_version" {
+  description = "NVIDIA driver version to install (e.g. 590, 570, 535)"
+  type        = string
+  default     = "590"
+}
+
 variable "ai_toolkit_auth" {
   description = "Optional auth token for AI Toolkit UI"
   type        = string

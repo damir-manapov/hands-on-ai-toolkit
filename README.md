@@ -14,6 +14,7 @@ Minimal runtime wrapper for [AI Toolkit by Ostris](https://github.com/ostris/ai-
 ├── compose/
 │   └── docker-compose.yml
 ├── terraform/
+│   ├── check.sh
 │   ├── cloud-init/
 │   │   └── selectel/
 │   │       └── ai-toolkit.yaml.tftpl
@@ -21,24 +22,33 @@ Minimal runtime wrapper for [AI Toolkit by Ostris](https://github.com/ostris/ai-
 │       ├── main.tf
 │       ├── variables.tf
 │       ├── outputs.tf
-│       └── terraform.tfvars.example
+│       ├── terraform.tfvars.example
+│       └── terraform.tfvars.moscow-4080
 ├── config/
 │   └── examples/
 │       └── train_lora_flux_24gb.yml
 ├── datasets/
 ├── output/
-├── check.sh
-└── all-checks.sh
+├── lib.sh              # shared helpers for provision/destroy
+├── provision.sh        # one-command Selectel provisioning
+├── destroy.sh          # one-command teardown
+├── check.sh            # runtime sanity checks
+├── all-checks.sh       # all checks in one go
+├── health.sh           # gitleaks + renovate freshness
+├── security.sh         # gitleaks secret scan
+├── renovate-check.sh   # Docker/Terraform dep freshness
+└── renovate.json
 ```
 
 ## Useful Checks
 
 ```sh
-./check.sh      # Local runtime sanity checks + compose config validation
-./terraform/check.sh # Terraform fmt/validate (+ optional tflint/trivy)
-./security.sh   # gitleaks secret scan (optional strict mode)
-./renovate-check.sh # Checks Docker/Terraform updates via Renovate dry-run
-./all-checks.sh # Runs runtime + terraform + security + renovate checks
+./check.sh           # Local runtime sanity checks + compose config validation
+./terraform/check.sh # Terraform fmt -check / validate (+ optional tflint/trivy)
+./security.sh        # gitleaks secret scan (optional strict mode)
+./renovate-check.sh  # Checks Docker/Terraform updates via Renovate dry-run
+./all-checks.sh      # Runs runtime + terraform + security + renovate checks
+./health.sh          # gitleaks + renovate (standard health pattern)
 ```
 
 ## Run (when internet is available)

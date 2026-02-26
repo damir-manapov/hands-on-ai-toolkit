@@ -16,50 +16,12 @@ set -euo pipefail
 # Optional:
 #   TF_VAR_ai_toolkit_auth   – auth token for the UI
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TF_DIR="$SCRIPT_DIR/terraform/selectel"
-DEFAULT_PRESET="terraform.tfvars.moscow-4080"
-VAR_FILE="${1:-$DEFAULT_PRESET}"
+source "$(cd "$(dirname "$0")" && pwd)/lib.sh"
 
-# ── Preflight ──────────────────────────────────────────────────
-check_env() {
-  local missing=()
-  for var in TF_VAR_selectel_domain TF_VAR_selectel_username \
-             TF_VAR_selectel_password TF_VAR_selectel_openstack_password; do
-    if [ -z "${!var:-}" ]; then
-      missing+=("$var")
-    fi
-  done
-  if [ ${#missing[@]} -gt 0 ]; then
-    echo "ERROR: Missing required environment variables:"
-    printf "  %s\n" "${missing[@]}"
-    echo ""
-    echo "Export them before running:"
-    echo '  export TF_VAR_selectel_domain="..."'
-    echo '  export TF_VAR_selectel_username="..."'
-    echo '  export TF_VAR_selectel_password="..."'
-    echo '  export TF_VAR_selectel_openstack_password="..."'
-    exit 1
-  fi
-}
-
-check_tool() {
-  if ! command -v "$1" &>/dev/null; then
-    echo "ERROR: $1 is required but not found in PATH"
-    exit 1
-  fi
-}
+VAR_FILE=$(resolve_var_file "${1:-}")
 
 check_env
 check_tool terraform
-
-# ── Resolve var file ───────────────────────────────────────────
-if [ ! -f "$TF_DIR/$VAR_FILE" ]; then
-  echo "ERROR: Var file not found: $TF_DIR/$VAR_FILE"
-  echo "Available presets:"
-  ls "$TF_DIR"/terraform.tfvars.* 2>/dev/null | sed 's|.*/||' || echo "  (none)"
-  exit 1
-fi
 
 echo "=== Provisioning AI Toolkit ==="
 echo "Preset: $VAR_FILE"

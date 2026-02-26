@@ -197,7 +197,8 @@ resource "openstack_compute_instance_v2" "ai_toolkit" {
   key_pair          = selectel_vpc_keypair_v2.ai_toolkit.name
   availability_zone = var.availability_zone
   user_data = templatefile("${path.module}/../cloud-init/selectel/ai-toolkit.yaml.tftpl", {
-    ai_toolkit_auth = var.ai_toolkit_auth
+    ai_toolkit_auth       = var.ai_toolkit_auth
+    nvidia_driver_version = var.nvidia_driver_version
   })
 
   network {
