@@ -68,24 +68,24 @@ echo "This usually takes 5-10 minutes for GPU setup..."
 
 # Wait for SSH to become available
 SSH_UP=false
-for i in $(seq 1 30); do
+for i in $(seq 1 60); do
   if ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no "root@$SERVER_IP" 'true' 2>/dev/null; then
     SSH_UP=true
     break
   fi
-  echo "  Waiting for SSH... ($i/30)"
+  echo "  Waiting for SSH... ($i/60)"
   sleep 10
 done
 
 if [ "$SSH_UP" != "true" ]; then
-  echo "ERROR: SSH not available after 5 minutes. Server may have failed to boot."
+  echo "ERROR: SSH not available after 10 minutes. Server may have failed to boot."
   echo "Check Selectel console or try: ssh root@$SERVER_IP"
   exit 1
 fi
 
-# Wait for cloud-init-ready marker
-ssh -o StrictHostKeyChecking=no "root@$SERVER_IP" \
-  'while [ ! -f /root/cloud-init-ready ]; do echo "  cloud-init still running..."; sleep 15; done'
+# Wait for cloud-init-ready marker (image pull can take 10+ min)
+ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=40 "root@$SERVER_IP" \
+  'while [ ! -f /root/cloud-init-ready ] && [ ! -f /root/cloud-init-error ]; do echo "  cloud-init still running..."; sleep 15; done'
 
 # Check for cloud-init errors
 CLOUD_INIT_ERROR=$(ssh "root@$SERVER_IP" 'cat /root/cloud-init-error 2>/dev/null' || true)
