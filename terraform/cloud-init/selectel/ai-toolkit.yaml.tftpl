@@ -1,0 +1,38 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+packages:
+  - ca-certificates
+  - curl
+  - git
+  - docker.io
+  - docker-compose-plugin
+
+write_files:
+  - path: /opt/ai-toolkit/compose.yml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      services:
+        ai-toolkit:
+          image: ostris/aitoolkit:latest
+          container_name: ai-toolkit
+          ports:
+            - "8675:8675"
+          volumes:
+            - /root/.cache/huggingface/hub:/root/.cache/huggingface/hub
+            - /opt/ai-toolkit/datasets:/app/ai-toolkit/datasets
+            - /opt/ai-toolkit/output:/app/ai-toolkit/output
+            - /opt/ai-toolkit/config:/app/ai-toolkit/config
+          environment:
+            - AI_TOOLKIT_AUTH=${ai_toolkit_auth}
+            - TZ=UTC
+          restart: unless-stopped
+
+runcmd:
+  - mkdir -p /opt/ai-toolkit/datasets /opt/ai-toolkit/output /opt/ai-toolkit/config
+  - systemctl enable docker
+  - systemctl start docker
+  - docker compose -f /opt/ai-toolkit/compose.yml pull
+  - docker compose -f /opt/ai-toolkit/compose.yml up -d
+  - touch /root/cloud-init-ready

@@ -13,14 +13,21 @@ Minimal runtime wrapper for [AI Toolkit by Ostris](https://github.com/ostris/ai-
 ```
 ├── compose/
 │   └── docker-compose.yml
+├── terraform/
+│   ├── cloud-init/
+│   │   └── selectel/
+│   │       └── ai-toolkit.yaml.tftpl
+│   └── selectel/
+│       ├── main.tf
+│       ├── variables.tf
+│       ├── outputs.tf
+│       └── terraform.tfvars.example
 ├── config/
 │   └── examples/
 │       └── train_lora_flux_24gb.yml
 ├── datasets/
 ├── output/
-├── aitk_db.db
 ├── check.sh
-├── health.sh
 └── all-checks.sh
 ```
 
@@ -45,3 +52,39 @@ Stop:
 ```sh
 docker compose -f compose/docker-compose.yml down
 ```
+
+## Provision server in Selectel (similar to optina-optimisations)
+
+1. Prepare variables:
+	```sh
+	cd terraform/selectel
+	cp terraform.tfvars.example terraform.tfvars
+	```
+
+2. Export Selectel credentials:
+	```sh
+	export TF_VAR_selectel_domain="..."
+	export TF_VAR_selectel_username="..."
+	export TF_VAR_selectel_password="..."
+	export TF_VAR_selectel_openstack_password="..."
+	# optional
+	export TF_VAR_ai_toolkit_auth="super-secure-token"
+	```
+
+3. Create server:
+	```sh
+	terraform init
+	terraform apply
+	```
+
+4. Get access details:
+	```sh
+	terraform output ssh_command
+	terraform output ui_url
+	terraform output wait_for_ready
+	```
+
+5. Destroy when done:
+	```sh
+	terraform destroy
+	```
