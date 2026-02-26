@@ -3,7 +3,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TF_DIR="$SCRIPT_DIR/terraform/selectel"
-DEFAULT_PRESET="terraform.tfvars.moscow-4080"
+DEFAULT_PRESET="terraform.tfvars.moscow-4090"
 
 # ── Env check ──────────────────────────────────────────────────
 check_env() {

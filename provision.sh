@@ -45,7 +45,13 @@ if ! terraform apply -input=false tfplan; then
   PARTIAL=$(terraform state list 2>/dev/null | wc -l)
   if [ "$PARTIAL" -gt 0 ]; then
     echo "Cleaning up $PARTIAL partially created resources..."
-    terraform destroy -var-file="$VAR_FILE" -auto-approve || true
+    if ! terraform destroy -var-file="$VAR_FILE" -auto-approve 2>&1; then
+      echo "WARN: Normal cleanup failed (flavor lookup issue?). Falling back to forced cleanup..."
+      terraform state list 2>/dev/null | grep '^openstack_\|^data\.openstack_' | while read -r res; do
+        terraform state rm "$res" 2>/dev/null || true
+      done
+      terraform destroy -var 'flavor_name=' -auto-approve || true
+    fi
   fi
   exit 1
 fi

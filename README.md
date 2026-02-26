@@ -23,7 +23,8 @@ Minimal runtime wrapper for [AI Toolkit by Ostris](https://github.com/ostris/ai-
 │       ├── variables.tf
 │       ├── outputs.tf
 │       ├── terraform.tfvars.example
-│       └── terraform.tfvars.moscow-4080
+│       ├── terraform.tfvars.moscow-4090
+│       └── terraform.tfvars.moscow-6000ada
 ├── config/
 │   └── examples/
 │       └── train_lora_flux_24gb.yml
@@ -82,6 +83,8 @@ export TF_VAR_hf_token="hf_..."
 
 # 2. Provision (Moscow RTX 4090 preset by default)
 ./provision.sh
+# Or use RTX 6000 Ada (48GB VRAM) for larger models
+./provision.sh terraform.tfvars.moscow-6000ada
 
 # 3. Destroy when done
 ./destroy.sh
@@ -94,23 +97,30 @@ export TF_VAR_hf_token="hf_..."
 | `./provision.sh` | Init + plan + apply, wait for cloud-init, verify GPU & UI |
 | `./destroy.sh` | Destroy all infrastructure (with confirmation prompt) |
 
-Both default to the `terraform.tfvars.moscow-4080` preset. Pass a custom var file:
+Both default to the `terraform.tfvars.moscow-4090` preset. Pass a custom var file:
 
 ```sh
-./provision.sh my-custom.tfvars
-./destroy.sh my-custom.tfvars
+./provision.sh terraform.tfvars.moscow-6000ada
+./destroy.sh terraform.tfvars.moscow-6000ada
 ```
 
 Skip destroy confirmation: `FORCE=1 ./destroy.sh`
+
+### Presets
+
+| Preset | GPU | vCPU | RAM | VRAM | Flavor |
+|--------|-----|------|-----|------|--------|
+| `terraform.tfvars.moscow-4090` (default) | RTX 4090 | 8 | 32 GB | 24 GB | `GL10.8-32768-0-1GPU` |
+| `terraform.tfvars.moscow-6000ada` | RTX 6000 Ada | 12 | 64 GB | 48 GB | `GL14.12-65536-1GPU` |
 
 ### Manual terraform (if needed)
 
 ```sh
 cd terraform/selectel
 terraform init
-terraform plan  -var-file=terraform.tfvars.moscow-4080
-terraform apply -var-file=terraform.tfvars.moscow-4080
+terraform plan  -var-file=terraform.tfvars.moscow-4090
+terraform apply -var-file=terraform.tfvars.moscow-4090
 terraform output ssh_command
 terraform output ui_url
-terraform destroy -var-file=terraform.tfvars.moscow-4080
+terraform destroy -var-file=terraform.tfvars.moscow-4090
 ```

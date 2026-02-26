@@ -54,7 +54,16 @@ fi
 # ── Destroy ────────────────────────────────────────────────────
 echo ""
 echo "--- Destroying ---"
-terraform destroy -var-file="$VAR_FILE" -auto-approve
+if ! terraform destroy -var-file="$VAR_FILE" -auto-approve 2>&1; then
+  echo ""
+  echo "WARN: terraform destroy failed (flavor lookup issue?). Falling back to forced cleanup..."
+  # Remove OpenStack resources from state (they depend on the failing flavor data source)
+  terraform state list 2>/dev/null | grep '^openstack_\|^data\.openstack_' | while read -r res; do
+    terraform state rm "$res" 2>/dev/null || true
+  done
+  # Destroy remaining Selectel-only resources
+  terraform destroy -var 'flavor_name=' -auto-approve || true
+fi
 
 echo ""
 echo "=== Infrastructure destroyed ==="

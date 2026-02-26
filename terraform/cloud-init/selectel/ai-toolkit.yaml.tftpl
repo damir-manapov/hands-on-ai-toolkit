@@ -1,12 +1,10 @@
 #cloud-config
-package_update: true
+# NOTE: package_update and packages are deliberately NOT used here.
+# On Selectel, the network/DNS may not be ready when cloud-init
+# runs the config stage (packages). Instead, all installs are done
+# in runcmd after an explicit DNS readiness wait.
+package_update: false
 package_upgrade: false
-packages:
-  - ca-certificates
-  - curl
-  - git
-  - docker.io
-  - docker-compose-v2
 
 write_files:
   - path: /etc/apt/apt.conf.d/99force-ipv4
@@ -56,6 +54,8 @@ runcmd:
   - for i in $(seq 1 30); do nslookup mirror.selectel.ru >/dev/null 2>&1 && break; echo "Waiting for DNS... ($i/30)"; sleep 10; done
   # Retry apt-get update until it succeeds (network init race)
   - for i in $(seq 1 5); do apt-get update -qq 2>/dev/null && break; echo "apt-get update retry $i"; sleep 15; done
+  # Install base packages (moved from packages: section — must run after DNS is ready)
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl git docker.io docker-compose-v2
   # Install NVIDIA driver
   - DEBIAN_FRONTEND=noninteractive apt-get install -y linux-headers-$(uname -r) nvidia-driver-${nvidia_driver_version} || { echo "NVIDIA driver install failed" > /root/cloud-init-error; touch /root/cloud-init-ready; exit 1; }
   # Wait for DKMS to build the kernel module (may already be done by apt postinst)
