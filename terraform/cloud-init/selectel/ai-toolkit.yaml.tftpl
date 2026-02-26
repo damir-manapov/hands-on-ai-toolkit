@@ -52,6 +52,10 @@ write_files:
 
 runcmd:
   - mkdir -p /opt/ai-toolkit/datasets /opt/ai-toolkit/output /opt/ai-toolkit/config
+  # Wait for DNS to become available (network may not be ready immediately)
+  - for i in $(seq 1 30); do nslookup mirror.selectel.ru >/dev/null 2>&1 && break; echo "Waiting for DNS... ($i/30)"; sleep 10; done
+  # Retry apt-get update until it succeeds (network init race)
+  - for i in $(seq 1 5); do apt-get update -qq 2>/dev/null && break; echo "apt-get update retry $i"; sleep 15; done
   # Install NVIDIA driver
   - DEBIAN_FRONTEND=noninteractive apt-get install -y linux-headers-$(uname -r) nvidia-driver-${nvidia_driver_version} || { echo "NVIDIA driver install failed" > /root/cloud-init-error; touch /root/cloud-init-ready; exit 1; }
   # Wait for DKMS to build the kernel module (may already be done by apt postinst)

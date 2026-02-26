@@ -12,7 +12,7 @@ ssh_public_key_path = "~/.ssh/id_ed25519.pub"
 
 # Use existing GPU flavor in Selectel/OpenStack
 # RTX 6000 Ada, 12 vCPU, 64GB RAM, 48GB VRAM
-flavor_name = "GL10.12-65536-0-1GPU"
+flavor_name = "GL14.12-65536-1GPU"
 
 # Ignored when flavor_name is set, kept for reference
 cpu_count    = 12
