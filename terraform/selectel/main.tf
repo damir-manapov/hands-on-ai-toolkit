@@ -66,7 +66,18 @@ data "openstack_images_image_v2" "ubuntu" {
   ]
 }
 
+data "openstack_compute_flavor_v2" "ai_toolkit" {
+  count = var.flavor_name != "" ? 1 : 0
+  name  = var.flavor_name
+
+  depends_on = [
+    selectel_vpc_project_v2.ai_toolkit,
+    selectel_iam_serviceuser_v1.ai_toolkit,
+  ]
+}
+
 resource "openstack_compute_flavor_v2" "ai_toolkit" {
+  count     = var.flavor_name == "" ? 1 : 0
   name      = "ai-toolkit-${var.environment_name}-${var.cpu_count}vcpu-${var.ram_gb}gb"
   vcpus     = var.cpu_count
   ram       = var.ram_gb * 1024
@@ -182,7 +193,7 @@ resource "openstack_networking_port_v2" "ai_toolkit" {
 
 resource "openstack_compute_instance_v2" "ai_toolkit" {
   name              = "ai-toolkit-${var.environment_name}"
-  flavor_id         = openstack_compute_flavor_v2.ai_toolkit.id
+  flavor_id         = var.flavor_name != "" ? data.openstack_compute_flavor_v2.ai_toolkit[0].id : openstack_compute_flavor_v2.ai_toolkit[0].id
   key_pair          = selectel_vpc_keypair_v2.ai_toolkit.name
   availability_zone = var.availability_zone
   user_data = templatefile("${path.module}/../cloud-init/selectel/ai-toolkit.yaml.tftpl", {

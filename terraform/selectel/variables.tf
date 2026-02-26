@@ -48,6 +48,12 @@ variable "image_name" {
   default     = "Ubuntu 24.04 LTS 64-bit"
 }
 
+variable "flavor_name" {
+  description = "Optional existing OpenStack flavor name (use for GPU flavors, e.g. compute_pci_gpu_rtx4080). If empty, custom CPU flavor is created from cpu_count/ram_gb"
+  type        = string
+  default     = ""
+}
+
 variable "cpu_count" {
   description = "vCPU count for AI Toolkit VM"
   type        = number

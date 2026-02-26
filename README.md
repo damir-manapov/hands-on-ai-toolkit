@@ -64,6 +64,11 @@ docker compose -f compose/docker-compose.yml down
 	cp terraform.tfvars.example terraform.tfvars
 	```
 
+	Moscow GPU preset (RTX 4080 target):
+	```sh
+	cp terraform.tfvars.moscow-4080 terraform.tfvars
+	```
+
 2. Export Selectel credentials:
 	```sh
 	export TF_VAR_selectel_domain="..."
