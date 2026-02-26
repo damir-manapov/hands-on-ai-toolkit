@@ -6,9 +6,15 @@ packages:
   - curl
   - git
   - docker.io
-  - docker-compose-plugin
+  - docker-compose-v2
 
 write_files:
+  - path: /etc/apt/apt.conf.d/99force-ipv4
+    owner: root:root
+    permissions: '0644'
+    content: |
+      Acquire::ForceIPv4 "true";
+
   - path: /opt/ai-toolkit/compose.yml
     owner: root:root
     permissions: '0644'
@@ -27,12 +33,30 @@ write_files:
           environment:
             - AI_TOOLKIT_AUTH=${ai_toolkit_auth}
             - TZ=UTC
+          deploy:
+            resources:
+              reservations:
+                devices:
+                  - driver: nvidia
+                    count: all
+                    capabilities: [gpu]
           restart: unless-stopped
 
 runcmd:
   - mkdir -p /opt/ai-toolkit/datasets /opt/ai-toolkit/output /opt/ai-toolkit/config
+  # Install NVIDIA driver
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y linux-headers-$(uname -r) nvidia-driver-590
+  - modprobe nvidia
+  - modprobe nvidia_uvm
+  # Install NVIDIA Container Toolkit
+  - curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+  - curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' > /etc/apt/sources.list.d/nvidia-container-toolkit.list
+  - apt-get update -qq
+  - apt-get install -y nvidia-container-toolkit
+  - nvidia-ctk runtime configure --runtime=docker
+  - systemctl restart docker
+  # Start AI Toolkit
   - systemctl enable docker
-  - systemctl start docker
   - docker compose -f /opt/ai-toolkit/compose.yml pull
   - docker compose -f /opt/ai-toolkit/compose.yml up -d
   - touch /root/cloud-init-ready

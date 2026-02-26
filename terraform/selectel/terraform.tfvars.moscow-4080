@@ -1,23 +1,22 @@
-# Moscow preset targeting GPU flavor (RTX 4080)
+# Moscow preset targeting GPU flavor (RTX 4090)
 # Copy to terraform.tfvars or pass explicitly with:
 # terraform apply -var-file=terraform.tfvars.moscow-4080
 
 environment_name = "ai-toolkit-moscow-4080"
 
 # Moscow region/zone
-region            = "ru-3"
-availability_zone = "ru-3b"
+region            = "ru-7"
+availability_zone = "ru-7b"
 
 ssh_public_key_path = "~/.ssh/id_ed25519.pub"
 
 # Use existing GPU flavor in Selectel/OpenStack
-# If this exact flavor name is not available in your account/zone,
-# check available flavors and adjust the value.
-flavor_name = "compute_pci_gpu_rtx4080"
+# RTX4090, 8 vCPU, 32GB RAM, 24GB VRAM
+flavor_name = "GL10.8-32768-0-1GPU"
 
 # Ignored when flavor_name is set, kept for reference
-cpu_count    = 16
-ram_gb       = 64
+cpu_count    = 8
+ram_gb       = 32
 
 disk_size_gb = 250
 disk_type    = "fast"
